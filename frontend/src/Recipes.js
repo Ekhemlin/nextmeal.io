@@ -42,7 +42,7 @@ function Recipes() {
       })
   }, []);
   async function searchRecipes() {
-    const URL = "https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/searchRecipeWithQuery";
+    const URL = process.env.REACT_APP_ENDPOINT + "/searchRecipeWithQuery";
     const result = await fetch(URL, {
       method: 'post',
       body: JSON.stringify({ "id": cookies.id, query: query, cuisine:cuisineQuery, excludeCuisine: cuisineExclude, diet:dietQuery }),
@@ -66,7 +66,7 @@ function Recipes() {
   };
 
   async function saveRecipePOST(recipeId, recipeTitle) {
-    const result = await fetch("https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/addRecipes", {
+    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addRecipes", {
       method: 'POST',
       body: JSON.stringify({ "id": cookies.id, recipeIds: [recipeId] }),
       headers: {

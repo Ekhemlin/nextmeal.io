@@ -15,7 +15,7 @@ function SavedRecipesDashboard() {
   const [savedRecipesRows, setSavedRecipesRows] = useState([]);  
 
   useEffect(() => {
-    const URL = `https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/getRecipes?id=${cookies.id}`;
+    const URL = process.env.REACT_APP_ENDPOINT + `/getRecipes?id=${cookies.id}`;
     fetch(URL)
       .then(response => response.json())
       .then((data) => {
@@ -42,7 +42,7 @@ function SavedRecipesDashboard() {
 
  
   async function functionSendDeleteRecipe(recipeId){
-    const result = await fetch("https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/removeRecipes", {
+    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/removeRecipes", {
       method: 'POST',
       body: JSON.stringify({"id" : cookies.id, recipeIds : [recipeId]}),
       headers: {

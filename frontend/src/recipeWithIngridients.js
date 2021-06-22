@@ -4,11 +4,15 @@ import { useState, useEffect } from "react";
 import ReactDataGrid from "react-data-grid";
 import { ProgressBar } from "react-bootstrap";
 
-function RecipesWithIngridients() {
+
+function Inventory() {
   const [cookies, setCookie] = useCookies(['name']);
+  const [inventoryRows, setInventoryRows] = useState([]);
   const [recipeSearchRows, setRecipeSearchRows] = useState([]);
 
   
+
+ 
   async function saveRecipePOST(recipeId) {
     const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addRecipes", {
       method: 'POST',
@@ -42,7 +46,21 @@ function RecipesWithIngridients() {
   };
 
   useEffect(() => {
-    searchRecipes();
+    const getItemsURL = process.env.REACT_APP_ENDPOINT + `/getItems?id=${cookies.id}`;
+    fetch(getItemsURL)
+      .then(response => response.json())
+      .then((data) => {
+        if (data) {
+          var i;
+          var generatedRows = [];
+          var inventory = data.inventory;
+          for (i = 0; i < inventory.length; i++) {
+            var item = inventory[i];
+            generatedRows.push({ title: item });
+          }
+          setInventoryRows(generatedRows);
+        }
+      })
   }, []);
 
 
@@ -74,34 +92,18 @@ function RecipesWithIngridients() {
     return null;
   }
 
-  const EmptyRowsView = () => {
-    console.log("empty")
-    const message = "Loading Recipes";
-    return (
-      <div
-        style={{ textAlign: "center", backgroundColor: "#ddd", padding: "100px", height:"100%" }}>
-        <h3>{message}</h3>
-      </div>
-    );
-  };
-
-  console.log(recipeSearchRows.length)
-
     return (<div>
-      <div style={{display: "flex","justify-content": "space-between"}}>
-      <h1 style={{ "margin-top": "50px" }}> Recipes you can cook right now</h1>
-      </div>
-      { <ReactDataGrid   
-          id="recipeSearchGrid"
+      <h2>Here are recipies you can cook</h2>
+      <button onClick={() => searchRecipes()}>show recipes</button>
+      { recipeSearchRows.length > 0 &&
+        <ReactDataGrid id="recipeSearchGrid"
           columns={recipeSearchColumns}
-          minHeight={250}
           rowGetter={i => recipeSearchRows[i]}
           rowsCount={recipeSearchRows.length}
-          emptyRowsView={EmptyRowsView}
           getCellActions={getSearchCellActions}
         />
       }
     </div>)
 }
 
-export default RecipesWithIngridients; 
+export default Inventory; 

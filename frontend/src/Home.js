@@ -3,11 +3,8 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect, useRef } from "react";
 import {
   CircularProgressbar
-  // CircularProgressbarWithChildren,
-  // buildStyles
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useRouteMatch } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import InventoryDashboard  from './InventoryDashboard';
 import SavedRecipesDashboard from './SavedRecipesDashboard'
@@ -25,7 +22,7 @@ function Home() {
   async function fetchUserData(userIdArg) {
     setCookie("id", userIdArg, {});
     var id = userIdArg;
-    const URL = `https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/getUser?id=${id}`;
+    const URL = process.env.REACT_APP_ENDPOINT + `/getUser?id=${id}`;
     const result = await fetch(URL, {
       method: 'get',
     });
@@ -93,7 +90,7 @@ function Home() {
       <input type="ID" onChange={(event) => setUserId(event.target.value)} />
       </label>
       <GoogleLogin
-        clientId="237051192708-qq3mafbbs63acrk8qu0sf09v6omucs30.apps.googleusercontent.com"
+        clientId={process.env.REACT_APP_GOOGLE_API_KEY}
         buttonText="Login"
         isSignedIn={true}
         onSuccess={responseGoogle}
