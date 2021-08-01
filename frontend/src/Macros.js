@@ -23,7 +23,7 @@ function Macros() {
         var intFat = parseInt(addFatValue);
         var intProt = parseInt(addProteinValue);
         alert("adding macros");
-        const result = await fetch("https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/addMacros", {
+        const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addMacros", {
             method: 'POST',
             body: JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt }),
             headers: {
@@ -43,7 +43,7 @@ function Macros() {
         var intCarbs = parseInt(carbGoalValue);
         var intFat = parseInt(fatGoalValue);
         var intProt = parseInt(proteinGoalValue);
-        const result = await fetch("https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/changeMacroGoals", {
+        const result = await fetch(process.env.REACT_APP_ENDPOINT + "/changeMacroGoals", {
             method: 'POST',
             body: JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt }),
             headers: {
@@ -60,7 +60,7 @@ function Macros() {
    
 
     useEffect(() => {
-        const URL = `https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/getMacros?id=${cookies.id}`;
+        const URL = process.env.REACT_APP_ENDPOINT + `/getMacros?id=${cookies.id}`;
         fetch(URL)
             .then(response => response.json())
             .then(setData)
