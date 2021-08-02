@@ -18,17 +18,36 @@ def makePrediction():
   protein = request.args.get('protein')
   chol = request.args.get('chol')
   sodium = request.args.get('sodium')
-  servingWeight = request.args.get('servingWeight')
- 
+  servingWeight = request.args.get('servingWeight') 
+
+  meats = request.args.get('meats') 
+  prepared_meats = request.args.get('prepared_meats') 
+  dairies = request.args.get('dairies') 
+  snacks = request.args.get('snacks') 
+  plant_based = request.args.get('plant_based') 
+  cereal_products = request.args.get('cereal_products') 
+  legumes = request.args.get('legumes') 
+  fruits = request.args.get('fruits') 
+  culinary_plants = request.args.get('culinary_plants') 
+
 
   sample = {
-    "calories": int(calories),
-    "Fat/g": int(fat),
-    "Carbohydrates/g" : int(carbs),
-    "Protein/g" : int(protein),
-    "Cholesterol/mg": int(chol),
-    "Sodium/mg" : int(sodium),
-    "weightPerServing" : int(servingWeight)
+    "calories": float(calories),
+    "Fat/g": float(fat),
+    "Carbohydrates/g" : float(carbs),
+    "Protein/g" : float(protein),
+    "Cholesterol/mg": float(chol),
+    "Sodium/mg" : float(sodium),
+    "weightPerServing" : float(servingWeight),
+    "meats" : float(meats),
+    "prepared-meats" : float(prepared_meats),
+    "dairies" : float(dairies),
+    "snacks" : float(snacks),
+    "plant-based-foods" : float(plant_based),
+    "cereals-and-their-products" : float(cereal_products),
+    "legumes-and-their-products" : float(legumes),
+    "fruits" : float(fruits),
+    "culinary-plants" : float(culinary_plants)
   }
 
   input_dict = {name: tf.convert_to_tensor([value]) for name, value in sample.items()}
