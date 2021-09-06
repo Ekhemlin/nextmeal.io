@@ -8,6 +8,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { GoogleLogin } from 'react-google-login';
 import InventoryDashboard  from './InventoryDashboard';
 import SavedRecipesDashboard from './SavedRecipesDashboard'
+import { v4 as uuidv4 } from 'uuid';
 
 require('bootstrap');
 
@@ -77,6 +78,14 @@ function Home() {
       </div>
     )
   }
+  else if(userId == '') {
+    if(cookies["id"]){
+      fetchUserData(cookies["id"]);
+    }
+    else{
+      fetchUserData(uuidv4())
+    }
+}
 
   const responseGoogle = (response) => {
     fetchUserData(response.googleId)
@@ -84,7 +93,8 @@ function Home() {
 
   return (
     <div>
-      <button onClick={() => searchUser()}>Create user</button>
+      <h1>Rendering</h1>
+      {/* <button onClick={() => searchUser()}>Create user</button>
       <label>
         ID:
       <input type="ID" onChange={(event) => setUserId(event.target.value)} />
@@ -96,7 +106,7 @@ function Home() {
         onSuccess={responseGoogle}
         onFailure={responseGoogle}
         cookiePolicy={'single_host_origin'}
-      />
+      /> */}
     </div>
   );
 }

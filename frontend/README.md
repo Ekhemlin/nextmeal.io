@@ -1,4 +1,4 @@
-# Serverless-Spoon Frontend 
+# Planyourmeal Frontend 
 
 
 A React.js meal planning app with an AWS serverless backend.
@@ -15,7 +15,7 @@ To build and run the frontend, you need to have [npm](https://www.npmjs.com/) in
 
 
 - Clone the repository.  
-- `cd serverlessSpoon/frontend`.
+- `cd Planyourmeal/frontend`.
 - Run `npm install`.
 - Run `npm start`.
 - The site will be avilable locally on http://localhost:3000.
