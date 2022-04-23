@@ -1,7 +1,7 @@
-# planyourmeal.online
+# nextmeal.io
 
 
-planyourmeal.online is a meal-planning site written with a React.js frontend, and an AWS [Serverless Application Model](https://aws.amazon.com/serverless/sam/) backend. The site is deployed at [planyourmeal.online](https://planyourmeal.online).
+nextmeal.io is a meal-planning site written with a React.js frontend, and an AWS [Serverless Application Model](https://aws.amazon.com/serverless/sam/) backend. The site is deployed at [nextmeal.io](https://nextmeal.io).
 
 
 Its current features are: 
@@ -43,11 +43,11 @@ To build and deploy the project, you need to have:
 
 
 - Clone the repository.  
-- `cd planyourmeal.online/SAM-backend`
+- `cd nextmeal.io/SAM-backend`
 - Run `sam build && sam deploy`.
 - Inside your AWS management console, go to the API Gateway page and ensure you have an API group named `sam-app`.
 - Copy the value of the `ID` field for sam-app. 
 - `cd ../frontend`
-- Create a `.env` file in `planyourmeal.online/frontend ` with the variable `API_ENDPOINT=<sam-app ID>`.
+- Create a `.env` file in `nextmeal.io/frontend ` with the variable `API_ENDPOINT=<sam-app ID>`.
 - Run `npm install`.
 - Run `npm start`.
