@@ -2,26 +2,13 @@ import React from 'react';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from "react";
 import ReactDataGrid from "react-data-grid";
-import ListGroup from 'react-bootstrap/ListGroup';
-import useModal from 'react-hooks-use-modal';
 
-
-// TODO: rename to inventory dashboard 
 
 function InventoryDashboard() {
   const [cookies, setCookie] = useCookies(['name']);
   const [inventoryRows, setInventoryRows] = useState([]);
-  const [inventoryAddRowsHTML, setInventoryAddRowsHTML] = useState([]);
-  const [inventoryAddRowsString, setInventoryAddRowsString] = useState([]);
-  const [Modal, open, close, isOpen] = useModal('root', {
-    preventScroll: true
-  });
+  const [addItemString, setAddItemString] = useState('')
 
-
-  useEffect(() => {
-    setInventoryAddRowsHTML([])
-    setInventoryAddRowsString([]);
-  }, [isOpen]); // Only re-run the effect if count changes
 
   async function deleteItemPOST(item) {
     const result = await fetch(process.env.REACT_APP_ENDPOINT + "/removeItems", {
@@ -45,33 +32,28 @@ function InventoryDashboard() {
     return body;
   };
 
-  async function addItemsPOST() {
-    var newRows = [];
-    console.log(inventoryAddRowsString);
-    for (var i = 0; i < inventoryAddRowsString.length; i++) {
-      var itemStr = inventoryAddRowsString[i];
-      newRows.push({ "title": inventoryAddRowsString[i] });
+  async function addItemPOST(item) {
+    var rows = inventoryRows;
+    var isItemDupe = false
+    for(var row in rows){
+      if(row.title==item){
+        isItemDupe = true
+      }  
     }
-    for (var i = 0; i < inventoryRows.length; i++) {
-      var item = inventoryRows[i];
-      if (!inventoryAddRowsString.includes(item.title)) {
-        newRows.push({ "title": item.title });
-      }
+    console.log(isItemDupe)
+    if(! isItemDupe){
+      rows.push({ "title": item });
+      const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addItems", {
+        method: 'POST',
+        body: JSON.stringify({ "id": cookies.id, items: [item] }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      setInventoryRows(rows);
     }
-    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addItems", {
-      method: 'POST',
-      body: JSON.stringify({ "id": cookies.id, items: inventoryAddRowsString }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    setInventoryAddRowsHTML([]);
-    setInventoryAddRowsString([]);
-    if(document.getElementById('itemInput')){
-      document.getElementById('itemInput').value = '';
-    }
-    setInventoryRows(newRows);
   };
+
 
   useEffect(() => {
     const getItemsURL = process.env.REACT_APP_ENDPOINT + `/getItems?id=${cookies.id}`;
@@ -109,38 +91,34 @@ function InventoryDashboard() {
     return null;
   }
 
-  function editInventoryAddRows(text) {
-    var newRowsHTML = [];
-    var newRowsString = [];
-    if (text != "") {
-      var splitText = text.split(",");
-      for (var i = 0; i < splitText.length; i++) {
-        var item = splitText[i].trim();
-        if(item==""){ continue}
-        newRowsHTML.push(<ListGroup.Item>{item}</ListGroup.Item>);
-        newRowsString.push(item);
+
+  function handleInputKeyDown(event) {
+    if (event.key === 'Enter') {
+      if(addItemString.length){
+        console.log(addItemString);
+        addItemPOST(addItemString);
+        setAddItemString('');
+        document.getElementById('itemInput').value = '';
       }
     }
-    setInventoryAddRowsHTML(newRowsHTML);
-    setInventoryAddRowsString(newRowsString);
   }
 
-  function handleKeyDown(event){
-    if (event.key === 'Enter'){
-      addItemsPOST();
-      close();
-    }
-  }
 
-  var returnHTML = [];
   if (inventoryRows) {
     const headerRowHeight = 50;
     const rowHeight = 50;
     const totalInventoryHeight = headerRowHeight + (rowHeight * inventoryRows.length);
-    return (<div>
-      <div style={{display: "flex","justify-content": "space-between"}}>
-      <h1 style={{ "margin-top": "50px" }}> Current inventory</h1>
-      <button class="btn btn-primary" onClick={open} style={{"height" : "30px", "margin-top" : "55px"}}>Add items</button>
+    return (
+    <div style={{ "margin-top": "50px" }}>
+      <div style={{ display: "flex", "justify-content": "space-between" }}>
+        <h1 style={{ "margin-right": "60%"}}>Inventory</h1>
+        <div class="input-group input-group-lg ">
+          <input type="text" class="form-control" placeholder="Press Enter to submit" onChange={(event) => setAddItemString(event.target.value)}
+            aria-describedby="basic-addon2" id="itemInput" style={{ height: "100%"}} onKeyDown={(event) => handleInputKeyDown(event)}/>
+          <div class="input-group-append">
+            <span class="input-group-text" id="basic-addon2">Add items</span>
+          </div>
+        </div>
       </div>
       <ReactDataGrid id="inventoryGrid"
         columns={inventoryColumns}
@@ -151,19 +129,6 @@ function InventoryDashboard() {
         rowHeight={rowHeight}
         getCellActions={getInventoryCellActions}
       />
-      <Modal style={{"margin-top" : "100px"}}> 
-        <div style={{backgroundColor: "white", "padding" : "2px"}}>  
-        <h2 style={{"margin-right" : "100px"}}>Add Items</h2>  
-        <h5 style={{"color" : "#403e3e"}}> Comma seperated, press enter to confirm</h5>  
-        <input style={{"width" : "100%"}} type="text" onKeyDown={(event) => handleKeyDown(event)} autocomplete="off" id="itemInput" onChange={(event) => editInventoryAddRows(event.target.value)} />
-        {inventoryAddRowsHTML.length > 0 &&
-          <ListGroup>
-            {inventoryAddRowsHTML}
-          </ListGroup>
-        }
-        </div>
-      </Modal>
-
     </div>)
   }
 }
