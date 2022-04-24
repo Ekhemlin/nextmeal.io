@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from "react";
+import {request_POST, request_GET} from './networking/requests.js';
 import "react-circular-progressbar/dist/styles.css";
 import "react-bootstrap";
 
@@ -23,19 +24,13 @@ function Macros() {
         var intFat = parseInt(addFatValue);
         var intProt = parseInt(addProteinValue);
         alert("adding macros");
-        const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addMacros", {
-            method: 'POST',
-            body: JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        var request_body = JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt });
+        const result = await request_POST("/addMacros", request_body);
         document.getElementById('caloriesInput').value = '';
         document.getElementById('carbsInput').value = '';
         document.getElementById('fatInput').value = '';
         document.getElementById('proteinInput').value = '';
-        var body = await result.json();
-        return body;
+        return result;
     }
 
     async function changeMacroGoalsPOST() {
@@ -43,26 +38,18 @@ function Macros() {
         var intCarbs = parseInt(carbGoalValue);
         var intFat = parseInt(fatGoalValue);
         var intProt = parseInt(proteinGoalValue);
-        const result = await fetch(process.env.REACT_APP_ENDPOINT + "/changeMacroGoals", {
-            method: 'POST',
-            body: JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        var request_body = JSON.stringify({ "id": cookies.id, calories: intCal, fat: intFat, carbs: intCarbs, protein: intProt });
+        const result = await request_POST("/changeMacroGoals", request_body);
         document.getElementById('carbGoalInput').value = '';
         document.getElementById('proteinGoalInput').value = '';
         document.getElementById('fatGoalInput').value = '';
         document.getElementById('caloriesGoalInput').value = '';
-        var body = await result.json();
-        return body;
+        return result;
     }
    
 
     useEffect(() => {
-        const URL = process.env.REACT_APP_ENDPOINT + `/getMacros?id=${cookies.id}`;
-        fetch(URL)
-            .then(response => response.json())
+        request_GET(`/getMacros?id=${cookies.id}`)
             .then(setData)
 
     }, []);

@@ -3,6 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect, useReducer } from "react";
 import ReactDataGrid from "react-data-grid";
 import { ProgressBar } from "react-bootstrap";
+import { request_POST, request_GET } from './networking/requests.js';
 
 
 const ProgressBarFormatter = ({ value }) => {
@@ -15,9 +16,7 @@ function SavedRecipesDashboard() {
   const [savedRecipesRows, setSavedRecipesRows] = useState([]);  
 
   useEffect(() => {
-    const URL = process.env.REACT_APP_ENDPOINT + `/getRecipes?id=${cookies.id}`;
-    fetch(URL)
-      .then(response => response.json())
+    request_GET(`/getRecipes?id=${cookies.id}`)
       .then((data) => {
         if (data) {
           var i;
@@ -42,26 +41,17 @@ function SavedRecipesDashboard() {
 
  
   async function functionSendDeleteRecipe(recipeId){
-    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/removeRecipes", {
-      method: 'POST',
-      body: JSON.stringify({"id" : cookies.id, recipeIds : [recipeId]}),
-      headers: {
-        'Content-Type' : 'application/json'
-      }
-    });
+    var request_body = JSON.stringify({"id" : cookies.id, recipeIds : [recipeId]});
+    const result = await request_POST("/removeRecipes", request_body);
     var newRows = [];
-    var i;
-    for(i=0; i<savedRecipesRows.length; i++){
+    for(var i=0; i<savedRecipesRows.length; i++){
       var row = savedRecipesRows[i];
       if(row.id!=recipeId){
         newRows.push(row);
       }
     }
     setSavedRecipesRows(newRows);
-    // setRows([]);
-    const body = await result.json();
-    console.log(body);
-    return body;
+    return result;
   };
 
   const savedRecipeColumns = [

@@ -2,7 +2,7 @@ import React from 'react';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from "react";
 import ReactDataGrid from "react-data-grid";
-
+import {request_POST, request_GET} from './networking/requests.js';
 
 function InventoryDashboard() {
   const [cookies, setCookie] = useCookies(['name']);
@@ -11,25 +11,17 @@ function InventoryDashboard() {
 
 
   async function deleteItemPOST(item) {
-    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/removeItems", {
-      method: 'POST',
-      body: JSON.stringify({ "id": cookies.id, items: [item] }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    const request_body = JSON.stringify({ "id": cookies.id, items: [item] })
+    const result = await request_POST("/removeItems", request_body)
     var newRows = [];
-    var i;
-    for (i = 0; i < inventoryRows.length; i++) {
+    for (var i = 0; i < inventoryRows.length; i++) {
       var row = inventoryRows[i];
       if (row.title != item) {
         newRows.push(row);
       }
     }
     setInventoryRows(newRows);
-    const body = await result.json();
-    console.log(body);
-    return body;
+    return result;
   };
 
   async function addItemPOST(item) {
@@ -43,34 +35,26 @@ function InventoryDashboard() {
     console.log(isItemDupe)
     if(! isItemDupe){
       rows.push({ "title": item });
-      const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addItems", {
-        method: 'POST',
-        body: JSON.stringify({ "id": cookies.id, items: [item] }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
       setInventoryRows(rows);
+      var request_body = JSON.stringify({ "id": cookies.id, items: [item] });
+      const result = await request_POST("/addItems", request_body);
     }
   };
 
 
   useEffect(() => {
-    const getItemsURL = process.env.REACT_APP_ENDPOINT + `/getItems?id=${cookies.id}`;
-    fetch(getItemsURL)
-      .then(response => response.json())
-      .then((data) => {
-        if (data) {
-          var i;
-          var generatedRows = [];
-          var inventory = data.inventory;
-          for (i = 0; i < inventory.length; i++) {
-            var item = inventory[i];
+    request_GET(`/getItems?id=${cookies.id}`)
+    .then((inventory_data) => {
+      if (inventory_data) {
+        var generatedRows = [];
+        var inventory = inventory_data.inventory;
+        for (var i = 0; i < inventory.length; i++) {
+          var item = inventory[i];
             generatedRows.push({ title: item });
-          }
-          setInventoryRows(generatedRows);
         }
-      })
+        setInventoryRows(generatedRows);
+      }
+    })
   }, []);
 
   const inventoryColumns = [

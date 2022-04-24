@@ -4,6 +4,7 @@ import { useState, useEffect, useReducer } from "react";
 import ReactDataGrid from "react-data-grid";
 import { Nav, ProgressBar } from "react-bootstrap";
 import RecipesWithIngridients from './RecipesWithIngridients'
+import { request_POST, request_GET } from './networking/requests.js';
 
 
 function Recipes() {
@@ -17,9 +18,7 @@ function Recipes() {
 
 
   useEffect(() => {
-    const URL = `https://qt6uy2yofd.execute-api.us-east-1.amazonaws.com/Prod/getRecipes?id=${cookies.id}`;
-    fetch(URL)
-      .then(response => response.json())
+    request_GET(`/getRecipes?id=${cookies.id}`)
       .then((data) => {
         if (data) {
           var i;
@@ -42,105 +41,92 @@ function Recipes() {
       })
   }, []);
   async function searchRecipes() {
-    const URL = process.env.REACT_APP_ENDPOINT + "/searchRecipeWithQuery";
-    const result = await fetch(URL, {
-      method: 'post',
-      body: JSON.stringify({ "id": cookies.id, query: query, cuisine:cuisineQuery, excludeCuisine: cuisineExclude, diet:dietQuery }),
-    })
-      .then(response => response.json())
-      .then((data) => {
-        if (data) {
-          var i;
-          var generatedRows = [];
-
-          var recipes = JSON.parse(data.recipes).results;
-          for (i = 0; i < recipes.length; i++) {
-            var recipe = recipes[i];
-            console.log("title " + recipe.title);
-            generatedRows.push({ title: recipe.title, id: recipe.id });
-          }
-          setRecipeSearchRows(generatedRows);
-          document.getElementById('recipeQuery').value = '';
-        }
-      })
-  };
-
-  async function saveRecipePOST(recipeId, recipeTitle) {
-    const result = await fetch(process.env.REACT_APP_ENDPOINT + "/addRecipes", {
-      method: 'POST',
-      body: JSON.stringify({ "id": cookies.id, recipeIds: [recipeId] }),
-      headers: {
-        'Content-Type': 'application/json'
+    var request_body = JSON.stringify({ "id": cookies.id, query: query, cuisine: cuisineQuery, excludeCuisine: cuisineExclude, diet: dietQuery });
+    const result = await request_POST("/searchRecipeWithQuery", request_body);
+    if (result) {
+      var generatedRows = [];
+      var recipes = JSON.parse(result.recipes).results;
+      for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        console.log("title " + recipe.title);
+        generatedRows.push({ title: recipe.title, id: recipe.id });
       }
-    });
-    var newRows = [];
-    for (var i = 0; i < savedRecipesRows.length; i++) {
-      var id = savedRecipesRows[i].id;
-      if (id != recipeId) {
-        newRows.push(savedRecipesRows[i]);
-      }
-    }
-    newRows.push({ "title": recipeTitle, diets: "Refresh page", cuisines: "Refresh page", cookingTime: "Refresh Page", healthscore: 0 });
-    setSavedRecipesRows(newRows);
-  };
-
-  function getSearchCellActions(column, row) {
-    if (column.key == "title") {
-      return ([
-        {
-          icon: <span className="glyphicon glyphicon-bookmark" />,
-          callback: () => {
-            alert(row.title + " was added to your saved recipes list");
-            saveRecipePOST(row.id, row.title);
-          }
-        },
-        {
-          icon: <span className="glyphicon glyphicon-info-sign" />,
-          callback: () => {
-            window.location = `../recipePage?recipeId=${row.id}`;
-          }
-        }
-      ]
-      );
-    }
-    return null;
+      setRecipeSearchRows(generatedRows);
+      document.getElementById('recipeQuery').value = '';
   }
-  const recipeSearchColumns = [
-    { key: "title", name: "Title" }
-  ];
+};
+
+async function saveRecipePOST(recipeId, recipeTitle) {
+  var request_body = JSON.stringify({ "id": cookies.id, recipeIds: [recipeId] });
+  const result = await request_POST("/addRecipes", request_body);
+  var newRows = [];
+  for (var i = 0; i < savedRecipesRows.length; i++) {
+    var id = savedRecipesRows[i].id;
+    if (id != recipeId) {
+      newRows.push(savedRecipesRows[i]);
+    }
+  }
+  newRows.push({ "title": recipeTitle, diets: "Refresh page", cuisines: "Refresh page", cookingTime: "Refresh Page", healthscore: 0 });
+  setSavedRecipesRows(newRows);
+};
+
+function getSearchCellActions(column, row) {
+  if (column.key == "title") {
+    return ([
+      {
+        icon: <span className="glyphicon glyphicon-bookmark" />,
+        callback: () => {
+          alert(row.title + " was added to your saved recipes list");
+          saveRecipePOST(row.id, row.title);
+        }
+      },
+      {
+        icon: <span className="glyphicon glyphicon-info-sign" />,
+        callback: () => {
+          window.location = `../recipePage?recipeId=${row.id}`;
+        }
+      }
+    ]
+    );
+  }
+  return null;
+}
+const recipeSearchColumns = [
+  { key: "title", name: "Title" }
+];
 
 
-  if (savedRecipesRows) {
-    return (
-      <div>
-        <RecipesWithIngridients />
-        <div style={{ "padding-top": "20px" }}>
-          <h1 style={{ "margin-top": "50px" , "margin-bottom" : "10px"}}>Search for recipes</h1>
-          <div style={{ display: "flex", "justify-content": "space-between"}}>
-            <Nav class="navbar navbar-light bg-light justify-content-between" style={{"width" : "100%"}}>
-            <h5 style={{ marginTop: "0"}}>Query:</h5>
+if (savedRecipesRows) {
+  return (
+    <div>
+      <RecipesWithIngridients />
+      <div style={{ "padding-top": "20px" }}>
+        <h1 style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Search for recipes</h1>
+        <div style={{ display: "flex", "justify-content": "space-between" }}>
+          <Nav class="navbar navbar-light bg-light justify-content-between" style={{ "width": "100%" }}>
+            <h5 style={{ marginTop: "0" }}>Query:</h5>
             <input type="text" id="recipeQuery" onChange={(event) => setQuery(event.target.value)} />
-            <h5 style={{ bottom: "0"}}>Cusine:</h5>
+            <h5 style={{ bottom: "0" }}>Cusine:</h5>
             <input type="text" id="cuisineQuery" onChange={(event) => setCuisineQuery(event.target.value)} />
-            <h5 style={{ bottom: "0"}}>Exclude Cuisine:</h5>
+            <h5 style={{ bottom: "0" }}>Exclude Cuisine:</h5>
             <input type="text" id="cuisineExclude" onChange={(event) => setCuisineExclude(event.target.value)} />
-            <h5 style={{ bottom: "0"}}>Diets:</h5>
+            <h5 style={{ bottom: "0" }}>Diets:</h5>
             <input type="text" id="dietQuery" onChange={(event) => setDietQuery(event.target.value)} />
             <button type="submit" onClick={() => searchRecipes()} className="btn btn-primary">Search recipe</button>
-            </Nav>
-          </div>
-
-          {recipeSearchRows.length > 0 &&
-            <ReactDataGrid id="recipeSearchGrid"
-              columns={recipeSearchColumns}
-              rowGetter={i => recipeSearchRows[i]}
-              rowsCount={recipeSearchRows.length}
-              getCellActions={getSearchCellActions}
-            />
-          }
+          </Nav>
         </div>
-      </div>)
-  }
+
+        {recipeSearchRows.length > 0 &&
+          <ReactDataGrid id="recipeSearchGrid"
+            columns={recipeSearchColumns}
+            rowGetter={i => recipeSearchRows[i]}
+            rowsCount={recipeSearchRows.length}
+            getCellActions={getSearchCellActions}
+          />
+        }
+      </div>
+    </div>)
+}
 }
 
 export default Recipes; 

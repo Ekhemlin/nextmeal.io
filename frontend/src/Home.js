@@ -9,6 +9,8 @@ import { GoogleLogin } from 'react-google-login';
 import InventoryDashboard  from './InventoryDashboard';
 import SavedRecipesDashboard from './SavedRecipesDashboard'
 import { v4 as uuidv4 } from 'uuid';
+import {request_POST, request_GET} from './networking/requests.js';
+
 
 require('bootstrap');
 
@@ -23,14 +25,11 @@ function Home() {
   async function fetchUserData(userIdArg) {
     setCookie("id", userIdArg, {});
     var id = userIdArg;
-    const URL = process.env.REACT_APP_ENDPOINT + `/getUser?id=${id}`;
-    const result = await fetch(URL, {
-      method: 'get',
-    });
-    const body = await result.json();
-    if (body["user"]) {
-      var macroGoals = body["user"]["macroGoals"];
-      var macroValuesJSON = body["user"]["macros"];
+    const result = await request_GET(`/getUser?id=${id}`)
+    if (result["user"]) {
+      var user = result["user"];
+      var macroGoals = user["macroGoals"];
+      var macroValuesJSON = user["macros"];
       var caloriesPercentage = macroValuesJSON.calories / macroGoals.calories * 100;
       var fatPercentage = macroValuesJSON.fat / macroGoals.fat * 100;
       var carbsPercentage = macroValuesJSON.carbs / macroGoals.carbs * 100;
@@ -41,7 +40,7 @@ function Home() {
       setMacroValues(macroValuesJSON);
       console.log(macroPerObj);
     }
-    setUserData(body["user"]);
+    setUserData(result);
   }
 
   async function searchUser() {
