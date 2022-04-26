@@ -1,1 +1,1 @@
-This is my initiative to create guides for how to solve problems I've encountered in my project. Both for my own convenience, and for knowledge sharing 
+This is my initiative to create guides for solving problems I've encountered in my project. Both for my own convenience, and for knowledge sharing. 

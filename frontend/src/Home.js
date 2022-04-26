@@ -6,10 +6,10 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { GoogleLogin } from 'react-google-login';
-import InventoryDashboard  from './InventoryDashboard';
+import InventoryDashboard from './InventoryDashboard';
 import SavedRecipesDashboard from './SavedRecipesDashboard'
 import { v4 as uuidv4 } from 'uuid';
-import {request_POST, request_GET} from './networking/requests.js';
+import { request_POST, request_GET } from './networking/requests.js';
 
 
 require('bootstrap');
@@ -50,41 +50,40 @@ function Home() {
   if (userData) {
     return (
       <div>
-      <h1 class="display-1 text-center" style={{"margin-bottom" : "30px"}}>Dashboard</h1>
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col">
-            <h3 class="text-center">Calories:</h3>
-            <CircularProgressbar value={macroPercentages.calories} text={`${macroValues.calories} cals`} strokeWidth={5} />
-          </div>
-          <div class="col">
-            <h3 class="text-center">Fat:</h3>
-            <CircularProgressbar value={macroPercentages.fat} text={`${macroValues.fat} g`} strokeWidth={5} />
-          </div>
-          <div class="col">
-            <h3 class="text-center">Carbs:</h3>
-            <CircularProgressbar value={macroPercentages.carbs} text={`${macroValues.carbs} g`} strokeWidth={5} />
-          </div>
-          <div class="col">
-            <h3 class="text-center">Protein:</h3>
-            <CircularProgressbar value={macroPercentages.protein} text={`${macroValues.protein} g`} strokeWidth={5} />
+        <h1 class="display-1 text-center" style={{ "margin-bottom": "30px" }}>Dashboard</h1>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col">
+              <h3 class="text-center">Calories:</h3>
+              <CircularProgressbar value={macroPercentages.calories} text={`${macroValues.calories} cals`} strokeWidth={5} />
+            </div>
+            <div class="col">
+              <h3 class="text-center">Fat:</h3>
+              <CircularProgressbar value={macroPercentages.fat} text={`${macroValues.fat} g`} strokeWidth={5} />
+            </div>
+            <div class="col">
+              <h3 class="text-center">Carbs:</h3>
+              <CircularProgressbar value={macroPercentages.carbs} text={`${macroValues.carbs} g`} strokeWidth={5} />
+            </div>
+            <div class="col">
+              <h3 class="text-center">Protein:</h3>
+              <CircularProgressbar value={macroPercentages.protein} text={`${macroValues.protein} g`} strokeWidth={5} />
+            </div>
           </div>
         </div>
-      </div>
-      
-      <InventoryDashboard/>
-      <SavedRecipesDashboard/>
+        <InventoryDashboard />
+        <SavedRecipesDashboard />
       </div>
     )
   }
-  else if(userId == '') {
-    if(cookies["id"]){
+  else if (userId == '') {
+    if (cookies["id"]) {
       fetchUserData(cookies["id"]);
     }
-    else{
+    else {
       fetchUserData(uuidv4())
     }
-}
+  }
 
   const responseGoogle = (response) => {
     fetchUserData(response.googleId)
@@ -92,20 +91,23 @@ function Home() {
 
   return (
     <div>
-      <h1>Rendering</h1>
-      {/* <button onClick={() => searchUser()}>Create user</button>
-      <label>
-        ID:
+      { process.env.SHOULD_ADD_GOOGLE_LOGIN &&
+        <div>
+          <button onClick={() => searchUser()}>Create user</button>
+          <label>
+            ID:
       <input type="ID" onChange={(event) => setUserId(event.target.value)} />
-      </label>
-      <GoogleLogin
-        clientId={process.env.REACT_APP_GOOGLE_API_KEY}
-        buttonText="Login"
-        isSignedIn={true}
-        onSuccess={responseGoogle}
-        onFailure={responseGoogle}
-        cookiePolicy={'single_host_origin'}
-      /> */}
+          </label>
+          <GoogleLogin
+            clientId={process.env.REACT_APP_GOOGLE_API_KEY}
+            buttonText="Login"
+            isSignedIn={true}
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+          />
+        </div>
+      }
     </div>
   );
 }

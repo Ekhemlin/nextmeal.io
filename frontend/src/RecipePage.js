@@ -3,6 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect } from "react";
 import ReactHtmlParser from 'react-html-parser';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { request_GET_any } from './networking/requests.js';
 
 
 function RecipePage() {
@@ -13,41 +14,30 @@ function RecipePage() {
     const urlParams = new URLSearchParams(queryString);
     const recipeId = urlParams.get("recipeId");
 
-    function predictML(recipe){
-            
-        console.log("test")
-        var i;
-        var calories; 
-        var fat; 
-        var protein;
-        var carbs;
-        var chol; 
-        var sodium; 
-        var servingSize; 
-        for(i=0; i<recipe.nutrition.nutrients.length; i++){
+    function predictML(recipe) {
+        var calories, fat, protein, carbs, chol, sodium, servingSize;
+        for (var i = 0; i < recipe.nutrition.nutrients.length; i++) {
             var nutrient = recipe.nutrition.nutrients[i]
-            if(nutrient.name == "Calories"){ calories = nutrient.amount}
-            if(nutrient.name == "Fat"){ fat = nutrient.amount}
-            if(nutrient.name == "Carbohydrates"){ carbs = nutrient.amount}
-            if(nutrient.name == "Cholesterol"){ chol = nutrient.amount}
-            if(nutrient.name == "Sodium"){ sodium = nutrient.amount}
-            if(nutrient.name == "Protein"){ protein = nutrient.amount}
-            if(nutrient.name == "weightPerServing"){ servingSize = nutrient.amount}            
+            if (nutrient.name == "Calories") { calories = nutrient.amount }
+            if (nutrient.name == "Fat") { fat = nutrient.amount }
+            if (nutrient.name == "Carbohydrates") { carbs = nutrient.amount }
+            if (nutrient.name == "Cholesterol") { chol = nutrient.amount }
+            if (nutrient.name == "Sodium") { sodium = nutrient.amount }
+            if (nutrient.name == "Protein") { protein = nutrient.amount }
+            if (nutrient.name == "weightPerServing") { servingSize = nutrient.amount }
         }
-        console.log("test2")
         const mlServerURL = process.env.REACT_APP_ML_ENDPOINT + `/predict?carbs=${carbs}&fat=${fat}&calories=${calories}&protein=${protein}&sodium=${sodium}&chol=${chol}&servingWeight=${200}`;
         fetch(mlServerURL)
-        .then((data) => {
-            console.log(data)
-        })
+            .then((data) => {
+                console.log(data)
+            })
 
     }
 
 
     useEffect(() => {
         const getRecipeURL = `https://api.spoonacular.com/recipes/${recipeId}/information?includeNutrition=true&apiKey=` + process.env.REACT_APP_SPOON_API_KEY;
-        fetch(getRecipeURL)
-            .then(response => response.json())
+        request_GET_any(getRecipeURL)
             .then((recipe) => {
                 if (recipe) {
                     var ingridientsArray = recipe.extendedIngredients;
@@ -60,13 +50,14 @@ function RecipePage() {
                     }
                     setIngridients(ingridientListItems);
                     setRecipeData(recipe);
-                    predictML(recipe)
+                    if (process.env.SHOULD_CALL_ML) {
+                        predictML(recipe)
+                    }
                 }
             })
-        }, []);
+    }, []);
 
     if (recipeData) {
-        // predictML()
         return (
             <div>
                 <h1 style={{ "margin-bottom": "50px" }} class="display-1 text-center">{recipeData.title}</h1>
@@ -82,16 +73,19 @@ function RecipePage() {
                         <div style={{ "font-size": "150%" }}> {ReactHtmlParser(recipeData.instructions)} </div>
                     </div>
                 }
-                <h2 style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Tags</h2>
-                <div class="container">
-                    <div class="row  justify-content-right" style={{ "width": "100%" }}>
-                        <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Vegetarian: " + recipeData.vegetarian.toString()}</span></h2>
-                        <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Vegan: " + recipeData.vegan.toString()}</span></h2>
-                        <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Gluten Free: " + recipeData.glutenFree.toString()}</span></h2>
-                        <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Very Healthy: " + recipeData.veryHealthy.toString()}</span></h2>
+                { process.env.SHOULD_CALL_ML &&
+                    <div>
+                        <h2 style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Tags</h2>
+                        <div class="container">
+                            <div class="row  justify-content-right" style={{ "width": "100%" }}>
+                                <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Vegetarian: " + recipeData.vegetarian.toString()}</span></h2>
+                                <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Vegan: " + recipeData.vegan.toString()}</span></h2>
+                                <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Gluten Free: " + recipeData.glutenFree.toString()}</span></h2>
+                                <h2 style={{ "margin-right": "10px" }}><span class="badge badge-secondary">{"Very Healthy: " + recipeData.veryHealthy.toString()}</span></h2>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
+                }
 
 
             </div>

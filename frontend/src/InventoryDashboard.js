@@ -57,8 +57,21 @@ function InventoryDashboard() {
     })
   }, []);
 
+  function rowFormatter(row){
+    return(
+      <h4>{row.value}</h4>
+    )
+  }
+
+  function headerRenderer(headerText){
+    return(
+      <h3>{headerText}</h3>
+    )
+  }
+  
+
   const inventoryColumns = [
-    { key: "title", name: "Ingredient name" },
+    { key: "title", name: "Ingredient name" , formatter: rowFormatter, headerRenderer: headerRenderer("Ingredient")}
   ];
 
   function getInventoryCellActions(column, row) {
@@ -90,12 +103,12 @@ function InventoryDashboard() {
 
   if (inventoryRows) {
     const headerRowHeight = 50;
-    const rowHeight = 50;
+    const rowHeight = 60;
     const totalInventoryHeight = headerRowHeight + (rowHeight * inventoryRows.length);
     return (
-    <div style={{ "margin-top": "50px" }}>
+    <div style={{ "margin-top": "50px"}}>
       <div style={{ display: "flex", "justify-content": "space-between" }}>
-        <h1 style={{ "margin-right": "60%"}}>Inventory</h1>
+        <h1 class="display-4" style={{ "margin-right": "60%"}}>Inventory</h1>
         <div class="input-group input-group-lg ">
           <input type="text" class="form-control" placeholder="Press Enter to submit" onChange={(event) => setAddItemString(event.target.value)}
             aria-describedby="basic-addon2" id="itemInput" style={{ height: "100%"}} onKeyDown={(event) => handleInputKeyDown(event)}/>
@@ -111,6 +124,7 @@ function InventoryDashboard() {
         minHeight={totalInventoryHeight}
         headerRowHeight={headerRowHeight}
         rowHeight={rowHeight}
+        headerRenderer={headerRenderer}
         getCellActions={getInventoryCellActions}
       />
     </div>)

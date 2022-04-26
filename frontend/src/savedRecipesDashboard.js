@@ -7,9 +7,20 @@ import { request_POST, request_GET } from './networking/requests.js';
 
 
 const ProgressBarFormatter = ({ value }) => {
-  return <ProgressBar now={value} label={`${value}%`} width="50" height="50" />;
+  return <ProgressBar now={value} label={`${value}%`} width="30" height="50" />;
 };
 
+function headerRenderer(headerText){
+  return(
+    <h3>{headerText}</h3>
+  )
+}
+
+function textRowFormatter(row){
+  return(
+    <h4>{row.value}</h4>
+  )
+}
 
 function SavedRecipesDashboard() {
   const [cookies, setCookie] = useCookies(['name']);
@@ -55,11 +66,11 @@ function SavedRecipesDashboard() {
   };
 
   const savedRecipeColumns = [
-    { key: "title", name: "Title" },
-    { key: "cuisines", name: "Cuisines" },
-    { key: "diets", name: "Diets" },
-    { key: "cookingTime", name: "Cooking Time (Minutes)" },
-    { key: "healthscore", name: "Health Score", formatter: ProgressBarFormatter }
+    { key: "title", name: "Title", headerRenderer: headerRenderer("Title"), formatter: textRowFormatter },
+    { key: "cuisines", name: "Cuisines", headerRenderer: headerRenderer("Cuisines"), formatter: textRowFormatter, width: '100%', resizable: true},
+    { key: "diets", name: "Diets", headerRenderer: headerRenderer("Diets"), formatter: textRowFormatter  },
+    { key: "cookingTime", name: "Cooking Time (Minutes)", headerRenderer: headerRenderer("Cooking Time (Minutes)"), formatter: textRowFormatter },
+    { key: "healthscore", name: "Health Score", formatter: ProgressBarFormatter, headerRenderer: headerRenderer("Health Score") }
   ];
 
   function getSavedCellActions(column, row) {
@@ -88,12 +99,12 @@ function SavedRecipesDashboard() {
 
   if (savedRecipesRows) {
     const headerRowHeight = 50;
-    const rowHeight = 50; 
+    const rowHeight = 60; 
     const totalHeight = headerRowHeight + (rowHeight*savedRecipesRows.length);
 
     return (
     <div  style={{"padding-bottom" : "20px"}}>
-      <h1 style={{"margin-top" : "50px"}}>Saved recipes</h1>
+      <h1 class="display-4" style={{"margin-top" : "50px"}}>Saved recipes</h1>
       <ReactDataGrid
         columns={savedRecipeColumns}
         rowGetter={i => savedRecipesRows[i]}
