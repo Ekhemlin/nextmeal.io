@@ -4,6 +4,7 @@
 ### Linux ###
 *~
 .aws-sam
+SAM-backend/.aws-sam
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
@@ -129,3 +130,12 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/osx,node,linux,windows
 
 samconfig.toml
+SAM-backend/.aws-sam/build.toml
+SAM-backend/.aws-sam/build/template.yaml
+SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py
+SAM-backend/.aws-sam/build.toml
+SAM-backend/.aws-sam/build/template.yaml
+SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py
+SAM-backend/.aws-sam/build.toml
+SAM-backend/.aws-sam/build/template.yaml
+SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py
