@@ -3,6 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect } from "react";
 import ReactDataGrid from "react-data-grid";
 import { request_POST, request_GET } from './networking/requests.js';
+import { toast } from 'wc-toast'
 
 function RecipesWithIngridients() {
   const [cookies, setCookie] = useCookies(['name']);
@@ -34,15 +35,15 @@ function RecipesWithIngridients() {
     searchRecipes();
   }, []);
 
-  function headerRenderer(headerText){
-    return(
+  function headerRenderer(headerText) {
+    return (
       <h3>{headerText}</h3>
     )
   }
-  
-  function textRowFormatter(row){
-    return(
-      <h4 style={{'overflow-x':'scroll'}}>{row.value}</h4>
+
+  function textRowFormatter(row) {
+    return (
+      <h4 style={{ 'overflow-x': 'scroll' }}>{row.value}</h4>
     )
   }
 
@@ -57,7 +58,7 @@ function RecipesWithIngridients() {
         {
           icon: <span className="glyphicon glyphicon-bookmark" />,
           callback: () => {
-            alert(row.title + " was added to your saved recipes list");
+            toast.success(row.title + " was added to your saved recipes list")
             saveRecipePOST(row.id);
           }
         },
@@ -86,21 +87,23 @@ function RecipesWithIngridients() {
   };
 
 
-  return (<div>
-    <div style={{ display: "flex", "justify-content": "space-between" }}>
-      <h1 class="display-4" style={{ "margin-top": "50px" }}> Recipes you can cook right now</h1>
-    </div>
-    { <ReactDataGrid
-      id="recipeSearchGrid"
-      columns={recipeSearchColumns}
-      minHeight={250}
-      rowGetter={i => recipeSearchRows[i]}
-      rowsCount={recipeSearchRows.length}
-      emptyRowsView={EmptyRowsView}
-      getCellActions={getSearchCellActions}
-    />
-    }
-  </div>)
+  return (
+    <div>
+      <wc-toast></wc-toast>
+      <div style={{ display: "flex", "justify-content": "space-between" }}>
+        <h1 class="display-4" style={{ "margin-top": "50px" }}> Recipes you can cook right now</h1>
+      </div>
+      { <ReactDataGrid
+        id="recipeSearchGrid"
+        columns={recipeSearchColumns}
+        minHeight={250}
+        rowGetter={i => recipeSearchRows[i]}
+        rowsCount={recipeSearchRows.length}
+        emptyRowsView={EmptyRowsView}
+        getCellActions={getSearchCellActions}
+      />
+      }
+    </div>)
 }
 
 export default RecipesWithIngridients; 

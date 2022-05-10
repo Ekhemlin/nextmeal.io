@@ -5,6 +5,7 @@ import ReactDataGrid from "react-data-grid";
 import { Nav, ProgressBar } from "react-bootstrap";
 import RecipesWithIngridients from './RecipesWithIngridients'
 import { request_POST, request_GET } from './networking/requests.js';
+import { toast } from 'wc-toast'
 
 
 function Recipes() {
@@ -87,7 +88,7 @@ function getSearchCellActions(column, row) {
       {
         icon: <span className="glyphicon glyphicon-bookmark" />,
         callback: () => {
-          alert(row.title + " was added to your saved recipes list");
+          toast.success(row.title + " was added to your saved recipes list")
           saveRecipePOST(row.id, row.title);
         }
       },
@@ -110,6 +111,7 @@ const recipeSearchColumns = [
 if (savedRecipesRows) {
   return (
     <div>
+      <wc-toast></wc-toast>
       <RecipesWithIngridients />
       <div style={{ "padding-top": "20px" }}>
         <h1 class="display-4" style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Search for recipes</h1>
