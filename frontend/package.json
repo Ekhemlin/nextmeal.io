@@ -6,6 +6,7 @@
     "@glideapps/glide-data-grid": "^1.0.15",
     "bootstrap": "^4.5.3",
     "direction": "^1.0.4",
+    "dotenv": "^16.0.0",
     "faker": "^5.1.0",
     "immutable": "^4.0.0-rc.12",
     "jquery": "^3.5.1",
@@ -25,7 +26,9 @@
     "react-scripts": "^4.0.3",
     "reactjs-popup": "^2.0.4",
     "styled-components": "^4.4.1",
-    "uuid": "^8.3.2"
+    "universal-cookie": "^4.0.4",
+    "uuid": "^8.3.2",
+    "wc-toast": "^1.2.7"
   },
   "scripts": {
     "start": "react-scripts start",

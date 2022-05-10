@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCookies } from 'react-cookie';
-import { useState, useEffect, useRef } from "react";
+import { useState} from "react";
 import {
   CircularProgressbar
 } from "react-circular-progressbar";
@@ -81,7 +81,9 @@ function Home() {
       fetchUserData(cookies["id"]);
     }
     else {
-      fetchUserData(uuidv4())
+      const newID = uuidv4()
+      setCookie("id", newID, {});
+      fetchUserData(newID)
     }
   }
 

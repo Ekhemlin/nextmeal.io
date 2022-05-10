@@ -34,10 +34,20 @@ function RecipesWithIngridients() {
     searchRecipes();
   }, []);
 
-
+  function headerRenderer(headerText){
+    return(
+      <h3>{headerText}</h3>
+    )
+  }
+  
+  function textRowFormatter(row){
+    return(
+      <h4 style={{'overflow-x':'scroll'}}>{row.value}</h4>
+    )
+  }
 
   const recipeSearchColumns = [
-    { key: "title", name: "Title" }
+    { key: "title", name: "Title", formatter: textRowFormatter, headerRenderer: headerRenderer("Ingredient") }
   ];
 
 
@@ -78,7 +88,7 @@ function RecipesWithIngridients() {
 
   return (<div>
     <div style={{ display: "flex", "justify-content": "space-between" }}>
-      <h1 style={{ "margin-top": "50px" }}> Recipes you can cook right now</h1>
+      <h1 class="display-4" style={{ "margin-top": "50px" }}> Recipes you can cook right now</h1>
     </div>
     { <ReactDataGrid
       id="recipeSearchGrid"

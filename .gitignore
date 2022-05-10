@@ -139,3 +139,6 @@ SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py
 SAM-backend/.aws-sam/build.toml
 SAM-backend/.aws-sam/build/template.yaml
 SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py
+SAM-backend/.aws-sam/build.toml
+SAM-backend/.aws-sam/build/template.yaml
+SAM-backend/.aws-sam/build/CreateTokenFunctionFunction/lambda_function.py

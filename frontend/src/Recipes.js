@@ -16,6 +16,17 @@ function Recipes() {
   const [cuisineExclude, setCuisineExclude] = useState("");
   const [dietQuery, setDietQuery] = useState("");
 
+  function headerRenderer(headerText){
+    return(
+      <h3>{headerText}</h3>
+    )
+  }
+  
+  function textRowFormatter(row){
+    return(
+      <h5 style={{'overflow-x':'scroll'}}>{row.value}</h5>
+    )
+  }
 
   useEffect(() => {
     request_GET(`/getRecipes?id=${cookies.id}`)
@@ -92,7 +103,7 @@ function getSearchCellActions(column, row) {
   return null;
 }
 const recipeSearchColumns = [
-  { key: "title", name: "Title" }
+  { key: "title", name: "Title", headerRenderer: headerRenderer("Title"), formatter: textRowFormatter }
 ];
 
 
@@ -101,16 +112,16 @@ if (savedRecipesRows) {
     <div>
       <RecipesWithIngridients />
       <div style={{ "padding-top": "20px" }}>
-        <h1 style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Search for recipes</h1>
+        <h1 class="display-4" style={{ "margin-top": "50px", "margin-bottom": "10px" }}>Search for recipes</h1>
         <div style={{ display: "flex", "justify-content": "space-between" }}>
           <Nav class="navbar navbar-light bg-light justify-content-between" style={{ "width": "100%" }}>
-            <h5 style={{ marginTop: "0" }}>Query:</h5>
+            <h3 style={{ marginTop: "0" }}>Query:</h3>
             <input type="text" id="recipeQuery" onChange={(event) => setQuery(event.target.value)} />
-            <h5 style={{ bottom: "0" }}>Cusine:</h5>
+            <h3 style={{ bottom: "0" }}>Cusine:</h3>
             <input type="text" id="cuisineQuery" onChange={(event) => setCuisineQuery(event.target.value)} />
-            <h5 style={{ bottom: "0" }}>Exclude Cuisine:</h5>
+            <h3 style={{ bottom: "0" }}>Exclude Cuisine:</h3>
             <input type="text" id="cuisineExclude" onChange={(event) => setCuisineExclude(event.target.value)} />
-            <h5 style={{ bottom: "0" }}>Diets:</h5>
+            <h3 style={{ bottom: "0" }}>Diets:</h3>
             <input type="text" id="dietQuery" onChange={(event) => setDietQuery(event.target.value)} />
             <button type="submit" onClick={() => searchRecipes()} className="btn btn-primary">Search recipe</button>
           </Nav>

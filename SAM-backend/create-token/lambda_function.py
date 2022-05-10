@@ -5,18 +5,36 @@ import uuid
 import json 
 from datetime import datetime, timedelta
 import boto3
+
  
 # Define the client to interact with AWS Lambda
 client = boto3.client('lambda')
  
+def format_and_return(payload, status):
+    payload_body = ({ 
+        "body" : {
+        "payload" : payload,
+        "status" : status}
+    })
+    response = client.invoke(
+        FunctionName = 'arn:aws:lambda:us-east-1:889543450939:function:sam-app-FormatReturnPayloadFunction-SXuwV8QL94XO',
+        InvocationType = 'RequestResponse',
+        Payload = json.dumps(payload_body)
+    )
+    return response
+
 
 def lambda_handler(event, context):
     if not (event and "body" in event):
         return("malformed request")
     
-    body = event["body"]
+    body = json.loads(event["body"])
     if not "username" in body:
-        return("missing username")
+        payload = {"error" : "missing username"}
+        response = format_and_return(payload, "200")
+        formattedPayload = json.load(response['Payload'])
+        return(formattedPayload)       
+    
     username = body["username"]
 
     rds_host  = "tokens.cqra1unid8az.us-east-1.rds.amazonaws.com"
@@ -64,19 +82,8 @@ def lambda_handler(event, context):
             item_count += 1
             print(row)
     
-    payload_body = ({ 
-        "body" : {
-        "payload" : {"token_id" : str(token_id), "TTL" : TTL},
-        "status" : "200"}
-    })
-    
- 
-    response = client.invoke(
-        FunctionName = 'arn:aws:lambda:us-east-1:889543450939:function:sam-app-FormatReturnPayloadFunction-SXuwV8QL94XO',
-        InvocationType = 'RequestResponse',
-        Payload = json.dumps(payload_body)
-    )
- 
     conn.commit()
+    payload = {"token_id" : str(token_id), "TTL" : TTL}
+    response = format_and_return(payload, "200")
     formattedPayload = json.load(response['Payload'])
     return(formattedPayload)       

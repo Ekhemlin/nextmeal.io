@@ -43,7 +43,7 @@ exports.lambdaHandler = async (event, context) => {
 
   let dataString = '';
 
-  const response = await new Promise((resolve, reject) => {
+  const spoon_response = await new Promise((resolve, reject) => {
     var url = "https://api.spoonacular.com/recipes/complexSearch?" + querystring.stringify({
       "apiKey": "d41161c9f9e8416cb1f41f655ea69192",
       "query": body["query"],

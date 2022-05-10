@@ -18,7 +18,7 @@ function headerRenderer(headerText){
 
 function textRowFormatter(row){
   return(
-    <h4>{row.value}</h4>
+    <h4 style={{'overflow-x':'scroll'}}>{row.value}</h4>
   )
 }
 
@@ -101,7 +101,6 @@ function SavedRecipesDashboard() {
     const headerRowHeight = 50;
     const rowHeight = 60; 
     const totalHeight = headerRowHeight + (rowHeight*savedRecipesRows.length);
-
     return (
     <div  style={{"padding-bottom" : "20px"}}>
       <h1 class="display-4" style={{"margin-top" : "50px"}}>Saved recipes</h1>
